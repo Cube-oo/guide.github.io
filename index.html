@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Guía Hand On - Danfoss FC302</title>
+  <style>
+    :root {
+      --bg: #f4f6f8;
+      --card: #ffffff;
+      --primary: #ea7a00;
+      --primary-dark: #b45309;
+      --dark: #1f2933;
+      --muted: #667085;
+      --line: #d9dee5;
+      --ok: #147a3f;
+      --warn: #c77700;
+      --danger: #b42318;
+      --blue: #1d4ed8;
+      --shadow: 0 18px 45px rgba(15, 23, 42, 0.12);
+      --radius: 18px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: linear-gradient(135deg, #eef2f7 0%, #ffffff 45%, #fff4e6 100%);
+      color: var(--dark);
+      line-height: 1.55;
+    }
+
+    .page {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 28px 18px 70px;
+    }
+
+    .company-logo {
+      display: flex;
+      align-items: center;
+      margin-bottom: 18px;
+    }
+
+    .company-logo img {
+      max-width: 240px;
+      height: auto;
+      display: block;
+      background: #111827;
+      padding: 14px 18px;
+      border-radius: 16px;
+      box-shadow: 0 10px 24px rgba(15, 23, 42, 0.12);
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 28px;
+      align-items: center;
+      background: var(--card);
+      border-radius: 28px;
+      padding: 34px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .hero::before {
+      content: "";
+      position: absolute;
+      right: -90px;
+      top: -90px;
+      width: 280px;
+      height: 280px;
+      background: radial-gradient(circle, rgba(234, 122, 0, 0.18), transparent 65%);
+      border-radius: 50%;
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 13px;
+      border-radius: 999px;
+      background: #fff1df;
+      color: var(--primary-dark);
+      font-weight: 700;
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    h1 {
+      margin: 18px 0 12px;
+      font-size: clamp(32px, 5vw, 56px);
+      line-height: 1.03;
+      letter-spacing: -0.04em;
+    }
+
+    .subtitle {
+      color: var(--muted);
+      font-size: 18px;
+      max-width: 720px;
+      margin-bottom: 24px;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .btn {
+      border: 0;
+      cursor: pointer;
+      padding: 13px 18px;
+      border-radius: 12px;
+      font-weight: 800;
+      font-size: 15px;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px rgba(15, 23, 42, 0.15);
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+    }
+
+    .btn-secondary {
+      background: #eef2f7;
+      color: var(--dark);
+    }
+
+    .drive-card {
+      background: #111827;
+      color: white;
+      border-radius: 26px;
+      padding: 24px;
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+      position: relative;
+      z-index: 1;
+    }
+
+    .lcp {
+      background: #2d3748;
+      border-radius: 20px;
+      padding: 18px;
+      border: 4px solid #111827;
+    }
+
+    .screen {
+      background: #d7f5d0;
+      color: #143312;
+      border-radius: 10px;
+      padding: 18px;
+      min-height: 115px;
+      font-family: "Courier New", monospace;
+      box-shadow: inset 0 0 12px rgba(0, 0, 0, 0.22);
+      margin-bottom: 18px;
+    }
+
+    .screen strong {
+      display: block;
+      font-size: 23px;
+      margin-bottom: 6px;
+    }
+
+    .keys {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+
+    .key {
+      background: #f8fafc;
+      color: #111827;
+      border-radius: 10px;
+      padding: 12px 8px;
+      text-align: center;
+      font-weight: 800;
+      min-height: 48px;
+      border-bottom: 4px solid #cbd5e1;
+    }
+
+    .key.green {
+      background: #dcfce7;
+      color: #14532d;
+      border-bottom-color: #16a34a;
+    }
+
+    .key.red {
+      background: #fee2e2;
+      color: #7f1d1d;
+      border-bottom-color: #dc2626;
+    }
+
+    .key.blue {
+      background: #dbeafe;
+      color: #1e3a8a;
+      border-bottom-color: #2563eb;
+    }
+
+    .section {
+      margin-top: 34px;
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 28px;
+      box-shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
+      border: 1px solid rgba(217, 222, 229, 0.9);
+    }
+
+    .section h2 {
+      margin: 0 0 18px;
+      font-size: 28px;
+      letter-spacing: -0.03em;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 13px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      background: var(--primary);
+      font-size: 22px;
+      flex: 0 0 auto;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 18px;
+    }
+
+    .check-card,
+    .info-card,
+    .fault-card {
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 18px;
+      background: #fbfcfe;
+    }
+
+    .check-card h3,
+    .info-card h3,
+    .fault-card h3 {
+      margin: 0 0 10px;
+      font-size: 18px;
+    }
+
+    ul {
+      margin: 10px 0 0;
+      padding-left: 20px;
+    }
+
+    li {
+      margin-bottom: 7px;
+    }
+
+    .procedure {
+      display: grid;
+      gap: 16px;
+      counter-reset: step;
+    }
+
+    .step {
+      display: grid;
+      grid-template-columns: 74px 1fr;
+      gap: 18px;
+      align-items: stretch;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 18px;
+      background: linear-gradient(180deg, #ffffff, #fbfcfe);
+    }
+
+    .step-number {
+      counter-increment: step;
+      width: 58px;
+      height: 58px;
+      border-radius: 18px;
+      background: var(--primary);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 26px;
+      font-weight: 900;
+    }
+
+    .step-number::before {
+      content: counter(step);
+    }
+
+    .step h3 {
+      margin: 0 0 8px;
+      font-size: 21px;
+    }
+
+    .big-key {
+      display: inline-flex;
+      padding: 10px 16px;
+      margin: 6px 0;
+      border-radius: 12px;
+      background: #111827;
+      color: #fff;
+      font-weight: 900;
+      letter-spacing: 0.04em;
+      box-shadow: inset 0 -4px 0 rgba(255, 255, 255, 0.12);
+    }
+
+    .big-key.green { background: #166534; }
+    .big-key.red { background: #c2410c; }
+    .big-key.blue { background: #1d4ed8; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      overflow: hidden;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+    }
+
+    th,
+    td {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      background: #111827;
+      color: white;
+    }
+
+    tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .alert {
+      border-radius: 16px;
+      padding: 18px;
+      margin: 18px 0;
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+      border: 1px solid;
+    }
+
+    .alert strong {
+      display: block;
+      margin-bottom: 3px;
+    }
+
+    .alert-warning {
+      background: #fff7ed;
+      border-color: #fed7aa;
+      color: #7c2d12;
+    }
+
+    .alert-danger {
+      background: #fef2f2;
+      border-color: #fecaca;
+      color: #7f1d1d;
+    }
+
+    .alert-info {
+      background: #eff6ff;
+      border-color: #bfdbfe;
+      color: #1e3a8a;
+    }
+
+    .flow {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .flow-item {
+      background: #111827;
+      color: white;
+      padding: 12px 15px;
+      border-radius: 12px;
+      font-weight: 800;
+      font-size: 14px;
+    }
+
+    .arrow {
+      font-size: 24px;
+      color: var(--primary);
+      font-weight: 900;
+    }
+
+    .fault-card {
+      border-left: 6px solid var(--warn);
+    }
+
+    .fault-card.danger {
+      border-left-color: var(--danger);
+    }
+
+    .fault-card.ok {
+      border-left-color: var(--ok);
+    }
+
+    .footer-note {
+      text-align: center;
+      color: var(--muted);
+      margin-top: 30px;
+      font-size: 14px;
+    }
+
+    .print-only {
+      display: none;
+    }
+
+    @media (max-width: 850px) {
+      .hero,
+      .grid-2,
+      .grid-3 {
+        grid-template-columns: 1fr;
+      }
+
+      .hero {
+        padding: 24px;
+      }
+
+      .step {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media print {
+      body {
+        background: white;
+      }
+
+      .page {
+        max-width: none;
+        padding: 0;
+      }
+
+      .hero,
+      .section {
+        box-shadow: none;
+        break-inside: avoid;
+      }
+
+      .hero-actions {
+        display: none;
+      }
+
+      .print-only {
+        display: block;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <section class="hero">
+      <div>
+        <div class="company-logo">
+          <img src="https://www.sbimpianti.it/storage/2020/11/logo-png-sb-impianti-wht.png" alt="SB Impianti Logo" />
+        </div>
+        <span class="tag">Danfoss FC302 · Procedimiento local</span>
+        <h1>Guía Hand On para motores con VFD Danfoss FC302</h1>
+        <p class="subtitle">
+          Procedimiento operativo para arrancar, regular y detener manualmente un motor desde el panel LCP del variador, sin mando directo del PLC.
+        </p>
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="#procedimiento">Ver procedimiento</a>
+          <a class="btn btn-secondary" href="#fallos">Si el motor no arranca</a>
+          <button class="btn btn-secondary" onclick="window.print()">Imprimir / PDF</button>
+        </div>
+      </div>
+
+      <div class="drive-card" aria-label="Representación del panel LCP Danfoss">
+        <div class="lcp">
+          <div class="screen">
+            <strong>HAND LOCAL</strong>
+            REF: 35.00 Hz<br />
+            MOTOR: RUN<br />
+            STATUS: OK
+          </div>
+          <div class="keys">
+            <div class="key green">Hand<br />On</div>
+            <div class="key red">Off</div>
+            <div class="key blue">Auto<br />On</div>
+            <div class="key">▲</div>
+            <div class="key">OK</div>
+            <div class="key">▼</div>
+            <div class="key">Back</div>
+            <div class="key">Reset</div>
+            <div class="key">Menu</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="verificaciones">
+      <h2><span class="icon">1</span> Verificaciones preliminares</h2>
+      <div class="grid-3">
+        <div class="check-card">
+          <h3>Alimentación presente</h3>
+          <ul>
+            <li>Red trifásica presente.</li>
+            <li>Drive encendido.</li>
+            <li>Display LCP activo.</li>
+            <li>Sin alarmas bloqueantes.</li>
+          </ul>
+        </div>
+        <div class="check-card">
+          <h3>Motor conectado</h3>
+          <ul>
+            <li>Salida U/V/W conectada.</li>
+            <li>Motor correctamente cableado.</li>
+            <li>Protección térmica verificada.</li>
+            <li>Freno mecánico liberado, si existe.</li>
+          </ul>
+        </div>
+        <div class="check-card">
+          <h3>Seguridad lista</h3>
+          <ul>
+            <li>STO no activo.</li>
+            <li>Zona de trabajo despejada.</li>
+            <li>Operador autorizado.</li>
+            <li>Parada de emergencia disponible.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="alert alert-danger">
+        <div>⚠️</div>
+        <div>
+          <strong>Atención</strong>
+          El modo Hand On permite comandar el motor localmente. Debe utilizarse solo para pruebas, mantenimiento, puesta en marcha o búsqueda de averías.
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2><span class="icon">2</span> Botones principales del LCP</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Tecla</th>
+            <th>Función</th>
+            <th>Uso típico</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Hand On</strong></td>
+            <td>Arranque local manual.</td>
+            <td>Prueba directa desde el panel del drive.</td>
+          </tr>
+          <tr>
+            <td><strong>Off</strong></td>
+            <td>Parada del motor.</td>
+            <td>Detener el motor con la rampa configurada.</td>
+          </tr>
+          <tr>
+            <td><strong>Auto On</strong></td>
+            <td>Regreso al mando remoto.</td>
+            <td>Volver al control por PLC, bornes o fieldbus.</td>
+          </tr>
+          <tr>
+            <td><strong>Reset</strong></td>
+            <td>Reset de alarmas.</td>
+            <td>Rearmar el variador después de eliminar la causa del fallo.</td>
+          </tr>
+          <tr>
+            <td><strong>▲ ▼</strong></td>
+            <td>Modificar referencia local.</td>
+            <td>Aumentar o disminuir la frecuencia de trabajo.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="section" id="procedimiento">
+      <h2><span class="icon">3</span> Procedimiento Hand On paso a paso</h2>
+      <div class="procedure">
+        <article class="step">
+          <div class="step-number"></div>
+          <div>
+            <h3>Verificar que no haya alarmas activas</h3>
+            <p>El display no debe mostrar <strong>Alarm</strong>, <strong>Trip</strong> o warnings bloqueantes. Si hay una alarma, eliminar la causa y pulsar <span class="big-key">RESET</span>.</p>
+          </div>
+        </article>
+
+        <article class="step">
+          <div class="step-number"></div>
+          <div>
+            <h3>Pasar el drive a control local</h3>
+            <p>Presionar la tecla <span class="big-key green">HAND ON</span>. El drive pasa de control automático/remoto a control local desde el LCP.</p>
+          </div>
+        </article>
+
+        <article class="step">
+          <div class="step-number"></div>
+          <div>
+            <h3>Comprobar la referencia de velocidad</h3>
+            <p>Verificar que exista una referencia distinta de cero. Ejemplo: <strong>20.00 Hz</strong>, <strong>35.00 Hz</strong> o <strong>50.00 Hz</strong>.</p>
+            <div class="alert alert-info">
+              <div>ℹ️</div>
+              <div><strong>Nota</strong> Si la referencia local está a 0 Hz, el motor puede quedar habilitado pero no girar.</div>
+            </div>
+          </div>
+        </article>
+
+        <article class="step">
+          <div class="step-number"></div>
+          <div>
+            <h3>Regular la velocidad</h3>
+            <p>Usar las teclas <span class="big-key">▲</span> y <span class="big-key">▼</span> para aumentar o disminuir el setpoint de frecuencia.</p>
+            <p>Ejemplo: de 30 Hz a 35 Hz, o de 35 Hz a 25 Hz.</p>
+          </div>
+        </article>
+
+        <article class="step">
+          <div class="step-number"></div>
+          <div>
+            <h3>Detener el motor</h3>
+            <p>Presionar <span class="big-key red">OFF</span>. El motor se detiene según la rampa de desaceleración configurada.</p>
+          </div>
+        </article>
+
+        <article class="step">
+          <div class="step-number"></div>
+          <div>
+            <h3>Volver al mando del PLC</h3>
+            <p>Antes de devolver la máquina a automático, presionar <span class="big-key blue">AUTO ON</span>. El drive vuelve a aceptar el comando remoto.</p>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2><span class="icon">4</span> Esquema operativo rápido</h2>
+      <div class="flow">
+        <div class="flow-item">Encendido drive</div>
+        <div class="arrow">→</div>
+        <div class="flow-item">Sin alarmas</div>
+        <div class="arrow">→</div>
+        <div class="flow-item">HAND ON</div>
+        <div class="arrow">→</div>
+        <div class="flow-item">Referencia Hz</div>
+        <div class="arrow">→</div>
+        <div class="flow-item">Motor en marcha</div>
+        <div class="arrow">→</div>
+        <div class="flow-item">OFF</div>
+        <div class="arrow">→</div>
+        <div class="flow-item">AUTO ON</div>
+      </div>
+    </section>
+
+    <section class="section" id="fallos">
+      <h2><span class="icon">5</span> Si el motor no arranca</h2>
+      <div class="grid-2">
+        <div class="fault-card danger">
+          <h3>STO activo</h3>
+          <p>El Safe Torque Off está inserido. El drive puede estar alimentado, pero no eroga coppia al motore.</p>
+        </div>
+        <div class="fault-card">
+          <h3>Referencia = 0 Hz</h3>
+          <p>El mando Hand On está activo, pero la referencia local de velocidad es nula.</p>
+        </div>
+        <div class="fault-card danger">
+          <h3>Alarma o Trip presente</h3>
+          <p>El variador está bloqueado. Eliminar la causa del fallo y realizar reset.</p>
+        </div>
+        <div class="fault-card">
+          <h3>Hand On deshabilitado</h3>
+          <p>Algunos parámetros pueden limitar o impedir el control local desde LCP.</p>
+        </div>
+        <div class="fault-card">
+          <h3>Comando remoto prioritario</h3>
+          <p>La configuración puede estar forzando el mando por bornes, fieldbus o PLC.</p>
+        </div>
+        <div class="fault-card ok">
+          <h3>Consenso externo mancante</h3>
+          <p>Verificar permisos de marcha, interbloqueos, finales de carrera, frenos y seguridades externas.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2><span class="icon">6</span> Parámetros frecuentes</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Parámetro / función</th>
+            <th>Descripción</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Local Reference</strong></td>
+            <td>Referencia utilizada en modo local Hand On.</td>
+          </tr>
+          <tr>
+            <td><strong>Ramp Up Time</strong></td>
+            <td>Tiempo de aceleración hasta la frecuencia solicitada.</td>
+          </tr>
+          <tr>
+            <td><strong>Ramp Down Time</strong></td>
+            <td>Tiempo de desaceleración durante la parada.</td>
+          </tr>
+          <tr>
+            <td><strong>Minimum Frequency</strong></td>
+            <td>Límite mínimo de frecuencia permitido.</td>
+          </tr>
+          <tr>
+            <td><strong>Maximum Frequency</strong></td>
+            <td>Límite máximo de frecuencia permitido.</td>
+          </tr>
+          <tr>
+            <td><strong>Control Site</strong></td>
+            <td>Selección o comportamiento del control local/remoto.</td>
+          </tr>
+          <tr>
+            <td><strong>Motor Data</strong></td>
+            <td>Datos de placa del motor: tensión, corriente, potencia, velocidad, frecuencia.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="section">
+      <h2><span class="icon">7</span> Buenas prácticas técnicas</h2>
+      <div class="grid-2">
+        <div class="info-card">
+          <h3>Durante la prueba</h3>
+          <ul>
+            <li>Empezar siempre desde baja frecuencia, por ejemplo 20 Hz.</li>
+            <li>No partir directamente a 50 Hz si no es necesario.</li>
+            <li>Controlar consumo, rumorosidad y vibraciones.</li>
+            <li>Verificar el sentido de giro.</li>
+          </ul>
+        </div>
+        <div class="info-card">
+          <h3>Antes de volver a automático</h3>
+          <ul>
+            <li>Detener el motor con OFF.</li>
+            <li>Presionar AUTO ON.</li>
+            <li>Verificar que el PLC tenga nuevamente el mando.</li>
+            <li>Informare il personale che la prova manuale è terminata.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="alert alert-warning">
+        <div>⚙️</div>
+        <div>
+          <strong>Uso consigliato</strong>
+          Il modo Hand On è indicato per collaudo, manutenzione, ricerca guasti, verifiche di rotazione e prove funzionali. Non deve essere utilizzato come modalità permanente di esercizio.
+        </div>
+      </div>
+    </section>
+
+    <p class="footer-note">
+      Guía operativa para uso interno. Verificar siempre la documentación Danfoss e le procedure di sicurezza specifiche dell'impianto.
+    </p>
+  </main>
+</body>
+</html>
